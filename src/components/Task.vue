@@ -1,8 +1,15 @@
 <template>
   <div class="block">
-        <article class="message is-dark is-small">
+        <article class="message is-small" :class="{'is-dark': !isDone, 'is-success': isDone }">
             <div class="message-body is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
-                <p>{{text}}</p>
+                <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
+                    <button class="button is-rounded is-small mr-2" @click="emitEventDone">
+                        <span class="icon is-small">
+                        <i class="fas fa-check"></i>
+                        </span>
+                    </button>
+                    <p>{{text}}</p>
+                </div>
                 <div>
                     {{date | filterDate}}
                     <button class="delete is-small ml-2" aria-label="delete" @click="emitEventDelete"></button>
@@ -14,6 +21,11 @@
 
 <script>
 export default {
+    data() {
+        return {
+            isDone: false
+        }
+    },
     props: {
         text: String,
         date: String,
@@ -30,7 +42,11 @@ export default {
     methods: {
         emitEventDelete: function() {
             this.$emit("deleteTaskEvent",{ id: this.id });
-        } 
+        },
+        emitEventDone: function() {
+            this.isDone = true;
+            this.$emit("doneTaskEvent", { id: this.id });
+        }
     }
 }
 </script>
