@@ -32,7 +32,7 @@ import Task from '../components/Task';
 export default {
   name: 'Home',
   created: function() {
-    routerGetPaginatedDoneTasks(0,10,"asc");
+    this.routerGetPaginatedDoneTasks(0,10,"asc");
   },
   components: {
     Task
