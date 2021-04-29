@@ -35,14 +35,7 @@ import Task from '../components/Task';
 export default {
   name: 'Home',
   created: function() {
-    axios.get("https://synkar-todolist-api.herokuapp.com/task/0/10/asc").then(res => {
-      console.log(res);
-      this.taskList = res.data.data;
-      this.pages = Math.ceil(Math.max(1, res.data.length / 10));
-      console.log(this.pages);
-    }).catch(error => {
-      console.log(error);
-    });
+    routerGetPaginatedTasks(0,10,"asc");
   },
   components: {
     Task
