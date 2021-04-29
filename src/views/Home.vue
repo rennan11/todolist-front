@@ -1,7 +1,7 @@
 <template>
     <div id="home">
         <div class="column is-half is-offset-one-quarter">
-        <p class="help is-danger" v-show="emptyField">É necessário preencher algo</p>
+        <p class="help is-danger" v-show="emptyField">É necessário digitar a tarefa</p>
         <input class="input is-rounded is-half block" type="text" placeholder="Digite sua tarefa aqui" v-model="taskText">
         <button class="button is-primary is-rounded block" @click="createTask"><span class="icon-text"><span class="icon"><i class="fas fa-plus"></i></span><span>Adicionar Tarefa</span></span></button>
         <div v-for="task in taskList" :key="task._id">
