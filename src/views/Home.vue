@@ -53,7 +53,8 @@ export default {
       taskText: "",
       pages: 1,
       pageActual: 1,
-      emptyField: false
+      emptyField: false,
+      API_URL: "https://synkar-todolist-api.herokuapp.com/"
     }
   },
   methods: {
@@ -63,61 +64,60 @@ export default {
       }
       else {
         this.emptyField = false;
-        axios.post("https://synkar-todolist-api.herokuapp.com/task/", { text: this.taskText }).then(res => {
-          console.log(res);
-          this.taskText = "";
-          axios.get("https://synkar-todolist-api.herokuapp.com/task/0/10/asc").then(res => {
-            this.taskList = res.data.data;
-            this.pages = Math.ceil(Math.max(1, res.data.length / 10));
-            console.log(this.pages);
-          }).catch(error => {
-            console.log(error);
-          });
-        }).catch(error => {
-          console.log(error);
-        })
+        var body = {
+          text: this.taskText
+        };
+        this.routerCreateTask(body);
       }
     },
     deleteTask: function($event) {
       var id = $event.id;
       
-      axios.delete("https://synkar-todolist-api.herokuapp.com/task/" + id).then(res => {
-        console.log(res);
-        axios.get("https://synkar-todolist-api.herokuapp.com/task/0/10/asc").then(res => {
-          this.taskList = res.data.data;
-          this.pages = Math.ceil(Math.max(1, res.data.length / 10));
-          console.log(this.pages);
-        }).catch(error => {
-          console.log(error);
-        });
-      }).catch( error => {
-        console.log(error);
-      });
+      this.routerDeleteTask(id);
     },
     findPage: function(index) {
       var page = index - 1;
-      axios.get("https://synkar-todolist-api.herokuapp.com/task/" + page + "/10/asc").then(res => {
-          this.taskList = res.data.data;
-          this.pages = Math.ceil(Math.max(1, res.data.length / 10));
-          this.pageActual = index;
-          
-          console.log(this.pageActual);
-      }).catch(error => {
-          console.log(error);
-      });
+      this.routerGetPaginatedTasks(page,10,"asc");
     },
     doneTask: function($event) {
       console.log($event);
       var id = $event.id;
-      axios.put("https://synkar-todolist-api.herokuapp.com/task/" + id, { done: true }).then(res => {
+      var body = {
+        done: true
+      }
+      this.routerEditTask(id, body);
+    },
+    routerGetPaginatedTasks: function(page,limit,order) {
+      axios.get(this.API_URL + "task/" + page + "/" + limit + "/" + order).then(res => {
+        this.taskList = res.data.data;
+        this.pages = Math.ceil(Math.max(1, res.data.length / 10));
+        this.pageActual = page + 1;
+        console.log(this.pages);
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    routerDeleteTask: function(id) {
+      axios.delete(this.API_URL + "task/" + id).then(res => {
         console.log(res);
-        axios.get("https://synkar-todolist-api.herokuapp.com/task/0/10/asc").then(res => {
-          this.taskList = res.data.data;
-          this.pages = Math.ceil(Math.max(1, res.data.length / 10));
-          console.log(this.pages);
+        this.routerGetPaginatedTasks(0,10,"asc");
+      }).catch( error => {
+        console.log(error);
+      });
+    },
+    routerCreateTask: function(body) {
+      axios.post(this.API_URL + "task/", body).then(res => {
+          console.log(res);
+          this.taskText = "";
+          this.routerGetPaginatedTasks(0,10,"asc");
         }).catch(error => {
           console.log(error);
         });
+    },
+    routerEditTask: function(id, body) {
+      axios.put(this.API_URL + "task/" + id, body).then(res => {
+        console.log(res);
+        this.routerGetPaginatedTasks(0,10,"asc");
       }).catch(error => {
           console.log(error);
       });
